@@ -69,5 +69,29 @@
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+    <script>
+      var socket = io("http://localhost:3333");
+      socket.emit("login", { id: "126387126312" });
+      socket.on("message", function (msg) {
+        console.log("he recibido un mensaje", msg);
+      });
+
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const messageList = document.getElementById("messages");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        socket.emit("msg", input.value);
+      });
+
+      socket.on("msg", function (msg) {
+        console.log("He recibido un mensaje", msg);
+        let item = document.createElement("li");
+        item.innerText = msg;
+        messageList.append(item);
+      });
+    </script>
   </body>
 </html>

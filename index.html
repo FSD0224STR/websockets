@@ -77,20 +77,44 @@
         console.log("he recibido un mensaje", msg);
       });
 
+      let nickname = prompt("¿Cuál es tu nombre?");
+
       const form = document.getElementById("form");
       const input = document.getElementById("input");
       const messageList = document.getElementById("messages");
+      const statusMsg = document.getElementById("status");
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        socket.emit("msg", input.value);
+        socket.emit("msg", { nickname: nickname, msg: input.value });
+      });
+
+      input.addEventListener("keypress", function (e) {
+        console.log("Usuario está escribiendo");
+        socket.emit("status", { nickname: nickname, status: "writting" });
       });
 
       socket.on("msg", function (msg) {
-        console.log("He recibido un mensaje", msg);
+        console.log("He recibido un mensaje", msg.msg);
         let item = document.createElement("li");
-        item.innerText = msg;
+        item.innerText = "💌 " + msg.nickname + ": " + msg.msg;
         messageList.append(item);
+      });
+
+      socket.on("userConnection", (msg) => {
+        let item = document.createElement("li");
+        item.innerText = "👨 " + msg.msg;
+        messageList.append(item);
+      });
+
+      socket.on("status", (status) => {
+        console.log("status", status);
+        switch (status.status) {
+          case "writting":
+            statusMsg.innerText = status.nickname + " está escribiendo";
+            break;
+          default:
+        }
       });
     </script>
   </body>

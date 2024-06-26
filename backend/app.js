@@ -17,19 +17,32 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   //detección de conexión
   console.log("a user connected");
+  io.emit("userConnection", { msg: "Un usuario se ha conectado" });
   // detección de desconexión
   socket.on("disconnect", () => {
     console.log("user disconnected");
+    io.emit("userConnection", { msg: "Un usuario se ha desconectado" });
   });
   //detección de nuevo evento
   socket.on("login", (user) => {
     console.log(user);
-    socket.emit("message", "Hola" + user.id);
+    io.emit("message", "Hola" + user.id);
   });
 
   socket.on("msg", (msg) => {
-    console.log("He recibido un nuevo mensaje", msg);
-    socket.emit("msg", msg);
+    console.log(msg);
+    console.log(
+      "He recibido un nuevo mensaje de ",
+      msg.nickname,
+      "que dice: ",
+      msg.msg
+    );
+    io.emit("msg", msg);
+  });
+
+  socket.on("status", (status) => {
+    console.log("status", status);
+    io.emit("status", status);
   });
 });
 

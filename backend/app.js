@@ -17,7 +17,6 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   //detección de conexión
   console.log("a user connected");
-  io.emit("userConnection", { msg: "Un usuario se ha conectado" });
   // detección de desconexión
   socket.on("disconnect", () => {
     console.log("user disconnected");
@@ -26,7 +25,7 @@ io.on("connection", (socket) => {
   //detección de nuevo evento
   socket.on("login", (user) => {
     console.log(user);
-    io.emit("message", "Hola" + user.id);
+    io.emit("signin", user);
   });
 
   socket.on("msg", (msg) => {

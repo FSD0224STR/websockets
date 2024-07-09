@@ -61,6 +61,25 @@
         padding: 0 10px;
         color: #999;
       }
+
+      #users {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding-right: 1rem;
+        background: #fff;
+        margin: 0;
+        border-left: 1px solid #eee;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        padding: 1rem 2rem;
+      }
+
+      #users li.offline::marker {
+        color: red;
+      }
+      #users li.online::marker {
+        color: green;
+      }
     </style>
   </head>
   <body>
@@ -69,20 +88,43 @@
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
+    <aside>
+      <ul id="users">
+        <li class="offline">Marta</li>
+        <li class="offline">Jordi</li>
+        <li class="offline">Pedro</li>
+        <li class="offline">Ana</li>
+        <li class="offline">Lucía</li>
+        <li class="offline">Martín</li>
+      </ul>
+    </aside>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
     <script>
-      var socket = io("http://localhost:3333");
-      socket.emit("login", { id: "126387126312" });
-      socket.on("message", function (msg) {
-        console.log("he recibido un mensaje", msg);
-      });
-
-      let nickname = prompt("¿Cuál es tu nombre?");
+      //var socket = io("https://websockets-tsll.onrender.com");
+      var socket = io("localhost:3333");
 
       const form = document.getElementById("form");
       const input = document.getElementById("input");
       const messageList = document.getElementById("messages");
       const statusMsg = document.getElementById("status");
+      const userList = document.getElementById("users");
+      users = userList.querySelectorAll("li");
+
+      let nickname = prompt("¿Cuál es tu nombre?");
+
+      socket.emit("login", { nickname: nickname });
+      socket.on("signin", function (user) {
+        let item = document.createElement("li");
+        item.innerText = "👨 " + user.nickname + " acaba de entrar ";
+        messageList.append(item);
+        [...users].map((item) => {
+          if (item.innerText === user.nickname) {
+            console.log("this", item);
+            item.classList.toggle("offline");
+            item.classList.toggle("online");
+          }
+        });
+      });
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();

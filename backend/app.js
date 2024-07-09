@@ -14,18 +14,26 @@ const io = new Server(server, {
   },
 });
 
+let connectedUsers = [];
+
 io.on("connection", (socket) => {
+  userActive = {};
+
   //detección de conexión
   console.log("a user connected");
   // detección de desconexión
   socket.on("disconnect", () => {
-    console.log("user disconnected");
-    io.emit("userConnection", { msg: "Un usuario se ha desconectado" });
+    console.log("user disconnected", userActive);
+    io.emit("userConnection", {
+      msg: userActive.nickname + " se ha desconectado",
+    });
   });
   //detección de nuevo evento
   socket.on("login", (user) => {
     console.log(user);
-    io.emit("signin", user);
+    userActive = user;
+    connectedUsers.push(user);
+    io.emit("signin", connectedUsers);
   });
 
   socket.on("msg", (msg) => {

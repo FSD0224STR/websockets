@@ -113,16 +113,27 @@
       let nickname = prompt("¿Cuál es tu nombre?");
 
       socket.emit("login", { nickname: nickname });
-      socket.on("signin", function (user) {
+      socket.on("signin", function (connectedUsers) {
+        console.log("connectedUsers", connectedUsers);
         let item = document.createElement("li");
-        item.innerText = "👨 " + user.nickname + " acaba de entrar ";
+        item.innerText =
+          "👨 " +
+          connectedUsers[connectedUsers.length - 1].nickname +
+          " acaba de entrar ";
         messageList.append(item);
-        [...users].map((item) => {
-          if (item.innerText === user.nickname) {
-            console.log("this", item);
-            item.classList.toggle("offline");
-            item.classList.toggle("online");
-          }
+        [...connectedUsers].map((connectedUser) => {
+          [...users].map((item) => {
+            console.log(
+              "this",
+              item.innerText,
+              connectedUser.nickname,
+              item.innerText === connectedUser.nickname
+            );
+            if (item.innerText === connectedUser.nickname) {
+              item.classList.remove("offline");
+              item.classList.add("online");
+            }
+          });
         });
       });
 
